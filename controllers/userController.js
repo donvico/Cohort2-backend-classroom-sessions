@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const { UserModel } = require("../models/userModel")
 
 async function createUser (req,res){
+    console.log(req.body);
     const {email, password, pin, phone_number, first_name, last_name} = req.body
     if(!email || !password || !pin || !phone_number || !first_name || !last_name){
         return res.status(400).json({success: false, data: 'Please provide all required fields'})
@@ -14,7 +15,7 @@ async function createUser (req,res){
     const newUser =  new UserModel({email,password, pin, phone_number, first_name, last_name})
     newUser.setAccountNumber()
     await newUser.save()
-    console.log(newUser)
+    res.status(201).json({success: true, data: 'User registered'})
 }
 
 // cors
@@ -37,11 +38,13 @@ async function loginUser(req, res){
         if(!passwordMatch){
             return res.status(400).json({success: true, message: 'Credential incorrect'})
         }
-        const token = user.generateToken(user)
-        console.log(token);
-        const myFirstData = jwt.verify(token, process.env.SECRET)
-        console.log(myFirstData,'the first');
-        res.status(200).json({success:true, data: token})
+        // const token = user.generateToken(user)
+        // console.log(token);
+        // const myFirstData = jwt.verify(token, process.env.SECRET)
+        // console.log(myFirstData,'the first');
+        req.session.user = user
+        res.cookie('lmtech', '1234')
+        res.status(200).json({success:true, data: 'Logged in successfully'})
     } catch (error) {
         console.log(error)
         res.status(500).json({error: error})
@@ -56,7 +59,7 @@ async function getUsers(req,res){
 
 async function getUser(req, res){
     try {
-      const user = req.user
+      const user = req.session.user
       return res.status(200).json({success: true, data: user})
     } catch (error) {
         console.log(error);
@@ -64,9 +67,14 @@ async function getUser(req, res){
     }
 }
 
+function getRegisterPage(req, res){
+    res.render('register')
+}
+
 module.exports = {
     createUser,
     getUsers,
     loginUser,
-    getUser
+    getUser,
+    getRegisterPage
 }

@@ -1,23 +1,36 @@
 const dotenv = require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
+const expressSession = require('express-session')
+const cookieParser = require('cookie-parser')
 const router = require('./routes/routes')
 const firstMid = require('./middlewares/firstMid')
 const secondMid = require('./middlewares/secondMid')
 const thirdMid = require('./middlewares/thirdMid')
 
+
+
 const app = express()
+app.use(cookieParser())
+app.use(expressSession({
+    secret: 'lmtechub',
+    saveUninitialized: true,
+    resave: false,
+    cookie: {}
+}))
+app.use(express.json())
+app.set('view engine', 'ejs')
 
 const port = process.env.PORT || 3100
 
 function handleTest(req, res){
-    console.log('this is the last middleware')
-    res.send('our test is ready')
+    // req.cookie.destroy()
+    req.session.destroy()
+    res.send('logged out')
 }
 
-app.use(express.json())
 app.use('/api',router)
-app.get('/test', [firstMid, secondMid, thirdMid], handleTest)
+app.get('/test', handleTest)
 
 // Middleware - function, has access to (req, res, another func next)
 
