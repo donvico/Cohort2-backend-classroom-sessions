@@ -39,7 +39,6 @@ const userSchema = new mongoose.Schema({
     },
     bvn: {
         type: Number,
-        unique: true,
         default: 0
     },
     secret_question:{

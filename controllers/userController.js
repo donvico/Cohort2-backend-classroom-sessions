@@ -2,17 +2,22 @@ const jwt = require('jsonwebtoken')
 const { UserModel } = require("../models/userModel")
 
 async function createUser (req,res){
-    console.log(req.body);
+    let response
     const {email, password, pin, phone_number, first_name, last_name} = req.body
     if(!email || !password || !pin || !phone_number || !first_name || !last_name){
-        return res.status(400).json({success: false, data: 'Please provide all required fields'})
+        response = {success: false, data: 'Please provide all required fields'}
+        res.redirect('/api/users/register', response)
+        // return res.status(400).json({success: false, data: 'Please provide all required fields'})
+    }
+    if(isNaN(pin)){
+        return res.status(400).json({message: 'Pin must be a number'})
     }
     const user = await UserModel.findOne({email})
     if(user){
         return res.status(401).json('Email exists')
     }
     
-    const newUser =  new UserModel({email,password, pin, phone_number, first_name, last_name})
+    const newUser =  new UserModel({email,password, pin: parseInt(pin), phone_number, first_name, last_name})
     newUser.setAccountNumber()
     await newUser.save()
     res.status(201).json({success: true, data: 'User registered'})
@@ -68,7 +73,7 @@ async function getUser(req, res){
 }
 
 function getRegisterPage(req, res){
-    res.render('register')
+    res.render('register', {title: 'this is the title'})
 }
 
 module.exports = {
