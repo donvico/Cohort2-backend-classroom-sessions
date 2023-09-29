@@ -33,6 +33,8 @@ function handleTest(req, res){
 app.use('/api',router)
 app.get('/test', handleTest)
 
+
+
 // Middleware - function, has access to (req, res, another func next)
 
 ///localhost:5000/api/users

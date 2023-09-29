@@ -1,8 +1,16 @@
 const jwt = require('jsonwebtoken')
 const { UserModel } = require("../models/userModel")
+const mailSend = require('../utils/sendMail')
+
+const htmlValue = `
+<body style="background-color: red; font-size: 50px;">
+  <h1> Baba don register congrats</h1>
+</body>
+`
 
 async function createUser (req,res){
     let response
+    
     const {email, password, pin, phone_number, first_name, last_name} = req.body
     if(!email || !password || !pin || !phone_number || !first_name || !last_name){
         response = {success: false, data: 'Please provide all required fields'}
@@ -20,6 +28,13 @@ async function createUser (req,res){
     const newUser =  new UserModel({email,password, pin: parseInt(pin), phone_number, first_name, last_name})
     newUser.setAccountNumber()
     await newUser.save()
+    const emailOption = {
+        to: email,
+        from: 'promise',
+        subject: 'Registration successful',
+        html: htmlValue
+    }
+    mailSend(emailOption, res)
     res.status(201).json({success: true, data: 'User registered'})
 }
 
@@ -48,7 +63,6 @@ async function loginUser(req, res){
         // const myFirstData = jwt.verify(token, process.env.SECRET)
         // console.log(myFirstData,'the first');
         req.session.user = user
-        res.cookie('lmtech', '1234')
         res.status(200).json({success:true, data: 'Logged in successfully'})
     } catch (error) {
         console.log(error)
