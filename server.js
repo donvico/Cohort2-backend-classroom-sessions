@@ -7,6 +7,7 @@ const router = require('./routes/routes')
 const firstMid = require('./middlewares/firstMid')
 const secondMid = require('./middlewares/secondMid')
 const thirdMid = require('./middlewares/thirdMid')
+const emailValidator = require('deep-email-validator')
 
 
 
@@ -30,6 +31,9 @@ function handleTest(req, res){
     res.send('logged out')
 }
 
+app.get('/', (req, res)=>{
+    res.send('this is the home route')
+})
 app.use('/api',router)
 app.get('/test', handleTest)
 
@@ -38,6 +42,12 @@ app.get('/test', handleTest)
 // Middleware - function, has access to (req, res, another func next)
 
 ///localhost:5000/api/users
+
+// async function checkEmail() {
+//     const validEmail = await emailValidator.validate('emmaokekeike@yahoo.com')
+//     console.log(validEmail)
+// }
+// checkEmail()
     
 app.listen(port, ()=>{
     console.log(`Server is running on port ${port}`);
@@ -47,4 +57,7 @@ app.listen(port, ()=>{
     })
 })
 
-//create a function that displays the english alphabet in streamable response. make the streamable out put to be console.log
+
+module.exports = app
+
+//create a func. that does the same thing a .split method does...

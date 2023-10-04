@@ -29,7 +29,6 @@ function mailSend(option, res){
     console.log('that error', error.message);
    }
 }
-console.log('send mail file was invoked');
 module.exports.myGuy = 'my guy'
 module.exports = mailSend
 
